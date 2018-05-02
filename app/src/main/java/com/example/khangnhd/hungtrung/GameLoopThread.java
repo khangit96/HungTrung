@@ -1,24 +1,19 @@
 package com.example.khangnhd.hungtrung;
 
-import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.view.SurfaceHolder;
-
-import java.util.logging.Handler;
 
 /**
  * Created by khangnhd on 02/05/2018.
  */
 
 class GameLoopThread extends Thread {
-    private MySurfaceView view;
+    private GameSurfaceView view;
 
     private boolean running = false;
 
+    static final long FPS = 10;
 
-    public GameLoopThread(MySurfaceView view) {
+    public GameLoopThread(GameSurfaceView view) {
 
         this.view = view;
 
@@ -37,8 +32,13 @@ class GameLoopThread extends Thread {
     public void run() {
 
         while (running) {
+            long ticksPS = 1000 / FPS;
+            long startTime;
+            long sleepTime;
 
             Canvas c = null;
+
+            startTime = System.currentTimeMillis();
 
             try {
 
@@ -55,9 +55,21 @@ class GameLoopThread extends Thread {
                 if (c != null) {
 
                     view.getHolder().unlockCanvasAndPost(c);
-
                 }
+            }
+            sleepTime = ticksPS - (System.currentTimeMillis() - startTime);
 
+            try {
+
+                if (sleepTime > 0)
+
+                    sleep(sleepTime);
+
+                else
+
+                    sleep(10);
+
+            } catch (Exception e) {
             }
 
         }

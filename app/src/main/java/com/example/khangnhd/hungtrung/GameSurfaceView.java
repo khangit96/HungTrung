@@ -17,7 +17,7 @@ import android.widget.Toast;
  * Created by khangnhd on 02/05/2018.
  */
 
-public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder sh;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Bitmap bmp;
@@ -27,7 +27,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private int xSpeed = 1;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public MySurfaceView(Context context) {
+    public GameSurfaceView(Context context) {
         super(context);
         sh = getHolder();
         sh.addCallback(this);

@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private SurfaceHolder surfaceHolder;
@@ -21,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new MySurfaceView(this));
+        setContentView(new GameSurfaceView(this));
 
 //        surfaceView = (SurfaceView) findViewById(R.id.imagesurface);
 //        surfaceHolder = surfaceView.getHolder();
