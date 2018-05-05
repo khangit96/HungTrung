@@ -24,7 +24,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private GameLoopThread gameLoopThread;
     private int x = 0;
-    private int xSpeed = 1;
+    private int xSpeed = 10;
+
+    private int y=0;
+    private int ySpeed=10;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public GameSurfaceView(Context context) {
@@ -70,18 +73,34 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     protected void onDraw(Canvas cv) {
         super.onDraw(cv);
-        if (x == getWidth() - bmp.getWidth()) {
-            xSpeed = -1;
-            Log.d("test","Stop move");
+
+        //Move from right to left
+//        if (x == getWidth() - bmp.getWidth()) {
+//            xSpeed = -10;
+//            Log.d("test","Move from right to left");
+//        }
+//
+//        //Move from left to right
+//        if (x == 0) {
+//            xSpeed = 10;
+//            Log.d("test","Move left to right");
+//        }
+//
+//        x = x + xSpeed;
+        if (y == getHeight() - bmp.getHeight()) {
+            ySpeed = -10;
+            Log.d("test","Move from right to left");
         }
 
-        if (x == 0) {
-            xSpeed = 1;
-            Log.d("test","Started move");
+        //Move from left to right
+        if (y == 0) {
+            ySpeed = 10;
+            Log.d("test","Move left to right");
         }
 
-        x = x + xSpeed;
+        y = y + ySpeed;
+
         cv.drawColor(Color.BLACK);
-        cv.drawBitmap(bmp, x, 10, null);
+        cv.drawBitmap(bmp, 10, y, null);
     }
 }
