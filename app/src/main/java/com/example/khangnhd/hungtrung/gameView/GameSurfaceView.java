@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -79,6 +80,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void onDraw(Canvas cv) {
         super.onDraw(cv);
+        Log.d("test", "" + cv.getWidth());
 
         cv.drawColor(Color.BLACK);
         spriteX.onDrawX(cv);
