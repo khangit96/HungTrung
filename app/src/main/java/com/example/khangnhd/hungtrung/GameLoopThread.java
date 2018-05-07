@@ -2,11 +2,13 @@ package com.example.khangnhd.hungtrung;
 
 import android.graphics.Canvas;
 
+import com.example.khangnhd.hungtrung.gameView.GameSurfaceView;
+
 /**
  * Created by khangnhd on 02/05/2018.
  */
 
-class GameLoopThread extends Thread {
+public class GameLoopThread extends Thread {
     private GameSurfaceView view;
 
     private boolean running = false;

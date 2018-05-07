@@ -1,4 +1,4 @@
-package com.example.khangnhd.hungtrung;
+package com.example.khangnhd.hungtrung.gameView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,10 +8,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
+
+import com.example.khangnhd.hungtrung.GameLoopThread;
+import com.example.khangnhd.hungtrung.R;
+import com.example.khangnhd.hungtrung.gameSprite.Sprite;
 
 /**
  * Created by khangnhd on 02/05/2018.
@@ -20,14 +24,12 @@ import android.widget.Toast;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder sh;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Bitmap bmp;
+    private Bitmap bmpEgg, bmpBasket;
 
     private GameLoopThread gameLoopThread;
-    private int x = 0;
-    private int xSpeed = 10;
 
-    private int y=0;
-    private int ySpeed=10;
+    //Sprite
+    private Sprite spriteX, spriteY;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public GameSurfaceView(Context context) {
@@ -37,7 +39,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paint.setColor(Color.BLUE);
         paint.setStyle(Paint.Style.FILL);
         gameLoopThread = new GameLoopThread(this);
-        bmp = BitmapFactory.decodeResource(getResources(), R.drawable.dot);
+
+        bmpEgg = BitmapFactory.decodeResource(getResources(), R.drawable.dot);
+        bmpBasket = BitmapFactory.decodeResource(getResources(), R.drawable.basket);
+        spriteX = new Sprite(this, bmpBasket, 0, 300, 30);
+        spriteY = new Sprite(this, bmpEgg, 10, 0, 30);
     }
 
     @Override
@@ -71,36 +77,18 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     @Override
-    protected void onDraw(Canvas cv) {
+    public void onDraw(Canvas cv) {
         super.onDraw(cv);
 
-        //Move from right to left
-//        if (x == getWidth() - bmp.getWidth()) {
-//            xSpeed = -10;
-//            Log.d("test","Move from right to left");
-//        }
-//
-//        //Move from left to right
-//        if (x == 0) {
-//            xSpeed = 10;
-//            Log.d("test","Move left to right");
-//        }
-//
-//        x = x + xSpeed;
-        if (y == getHeight() - bmp.getHeight()) {
-            ySpeed = -10;
-            Log.d("test","Move from right to left");
-        }
-
-        //Move from left to right
-        if (y == 0) {
-            ySpeed = 10;
-            Log.d("test","Move left to right");
-        }
-
-        y = y + ySpeed;
-
         cv.drawColor(Color.BLACK);
-        cv.drawBitmap(bmp, 10, y, null);
+        spriteX.onDrawX(cv);
+        spriteY.onDrawY(cv);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        spriteX.setPostion(100, 100);
+        Toast.makeText(getContext(), "touch:" + event.getX() + "," + event.getY(), Toast.LENGTH_LONG).show();
+        return true;
     }
 }
