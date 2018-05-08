@@ -9,8 +9,8 @@ import com.example.khangnhd.hungtrung.gameView.GameSurfaceView;
 public class Sprite {
 
     //Position
-    private int x;
-    private int y;
+    private float x = 0;
+    private float y = 0;
 
     //Speed
     private int xSpeed = 0;
@@ -21,36 +21,37 @@ public class Sprite {
 
     private Bitmap bmp;
 
+    private float width;
+    private float height;
+
     /*
      * Constructor X Sprite
      * */
-    public Sprite(GameSurfaceView gameView, Bitmap bmp, int x, int y, int speed) {
+    public Sprite(GameSurfaceView gameView, Bitmap bmp, int speed) {
         this.gameView = gameView;
         this.bmp = bmp;
-
-        this.x = x;
-        this.y = y;
-
         this.speed = speed;
         this.xSpeed = speed;
         this.ySpeed = speed;
+        this.width = bmp.getWidth();
+        this.height = bmp.getHeight();
     }
 
 
     /*
         Update X
     * */
-    private void updateX() {
+    private void updateBasket() {
 
-        if (x > gameView.getWidth() - bmp.getWidth() - xSpeed) {
-            xSpeed = -speed;
-            Log.d("test", "move right to left");
-        }
-
-        if (x + xSpeed < 0) {
-            Log.d("test", "move to left to right");
-            xSpeed = speed;
-        }
+//        if (x > gameView.getWidth() - bmp.getWidth() - xSpeed) {
+//            xSpeed = -speed;
+//            Log.d("test", "move right to left");
+//        }
+//
+//        if (x + xSpeed < 0) {
+//            Log.d("test", "move to left to right");
+//            xSpeed = speed;
+//        }
 
         // x += xSpeed;
     }
@@ -58,42 +59,79 @@ public class Sprite {
     /*
      * Update Y
      * */
-    private void updateY() {
+    private void updateEgg() {
 
         if (y > gameView.getHeight() - bmp.getHeight() - ySpeed) {
-            ySpeed = -speed;
-            Log.d("test", "move right to left");
+            //ySpeed = -speed;
+            y = 0;
+            //  Log.d("test", "move right to left");
+        } else {
+            y += ySpeed;
         }
 
-        if (y + ySpeed < 0) {
-            Log.d("test", "move to left to right");
-            ySpeed = speed;
-        }
+//        if (y + ySpeed < 0) {
+//            // Log.d("test", "move to left to right");
+//            ySpeed = speed;
+//        }
 
-        y += ySpeed;
+
     }
 
     /*
      * */
-    public void setPostion(int x, int y) {
+//    public void setPostion(int x, int y) {
+//        this.x = x;
+//        this.y = y;
+//    }
+    public void setX(float x) {
         this.x = x;
+    }
+
+    public void setY(float y) {
         this.y = y;
     }
 
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    /*
+    *
+    * */
+    public boolean isCollision(float x2, float y2) {
+        if (y2 >= y) {
+
+        }
+        return true;
+    }
 
     /*
      * Ondraw X
      * */
-    public void onDrawX(Canvas canvas) {
-        updateX();
-        canvas.drawBitmap(bmp, x, gameView.getHeight() - bmp.getHeight(), null);
+    public void onDrawBasket(Canvas canvas) {
+        updateBasket();
+        setY(gameView.getHeight() - bmp.getHeight());
+        canvas.drawBitmap(bmp, x, y, null);
     }
 
     /*
      * Ondraw Y
      * */
-    public void onDrawY(Canvas canvas) {
-        updateY();
-        canvas.drawBitmap(bmp, 10, y, null);
+    public void onDrawEgg(Canvas canvas) {
+        updateEgg();
+        setX(150);
+        canvas.drawBitmap(bmp, x, y, null);
     }
 }

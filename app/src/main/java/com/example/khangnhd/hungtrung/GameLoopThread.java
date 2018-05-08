@@ -13,7 +13,7 @@ public class GameLoopThread extends Thread {
 
     private boolean running = false;
 
-    static final long FPS = 10;
+    static final long FPS = 100;
 
     public GameLoopThread(GameSurfaceView view) {
 

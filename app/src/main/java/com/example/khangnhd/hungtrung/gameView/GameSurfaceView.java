@@ -30,7 +30,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private GameLoopThread gameLoopThread;
 
     //Sprite
-    private Sprite spriteX, spriteY;
+    private Sprite spriteBasket, spriteEgg;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public GameSurfaceView(Context context) {
@@ -41,10 +41,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paint.setStyle(Paint.Style.FILL);
         gameLoopThread = new GameLoopThread(this);
 
-        bmpEgg = BitmapFactory.decodeResource(getResources(), R.drawable.dot);
-        bmpBasket = BitmapFactory.decodeResource(getResources(), R.drawable.basket);
-        spriteX = new Sprite(this, bmpBasket, 0, 300, 30);
-        spriteY = new Sprite(this, bmpEgg, 10, 0, 30);
+        bmpEgg = BitmapFactory.decodeResource(getResources(), R.drawable.egg);
+        bmpBasket = BitmapFactory.decodeResource(getResources(), R.drawable.basket3);
+        spriteBasket = new Sprite(this, bmpBasket, 20);
+        spriteEgg = new Sprite(this, bmpEgg, 20);
+
     }
 
     @Override
@@ -80,17 +81,28 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void onDraw(Canvas cv) {
         super.onDraw(cv);
-        Log.d("test", "" + cv.getWidth());
 
         cv.drawColor(Color.BLACK);
-        spriteX.onDrawX(cv);
-        spriteY.onDrawY(cv);
+
+        spriteBasket.onDrawBasket(cv);
+        spriteEgg.onDrawEgg(cv);
+
+        // Log.d("test", "width:" + spriteBasket.getWidth() + "height:" + spriteBasket.getHeight());
+
+        if (spriteEgg.getY() >= spriteBasket.getY() && spriteEgg.getX() > spriteBasket.getX() && spriteEgg.getX() < spriteBasket.getX() + spriteBasket.getWidth()) {
+            Log.d("test", "Ok");
+        }
+
+        // Log.d("test", "basket-X:" + spriteBasket.getX() + "basket-Y:" + spriteBasket.getY());
+        // Log.d("test", "egg-X:" + spriteEgg.getX() + "basket-X:" + spriteBasket.getX());
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        spriteX.setPostion(100, 100);
-        Toast.makeText(getContext(), "touch:" + event.getX() + "," + event.getY(), Toast.LENGTH_LONG).show();
+
+        spriteBasket.setX(event.getX());
+        // Toast.makeText(getContext(), "touch:" + event.getX() + "," + event.getY(), Toast.LENGTH_LONG).show();
         return true;
     }
 }
