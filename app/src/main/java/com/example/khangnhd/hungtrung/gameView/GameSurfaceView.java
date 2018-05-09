@@ -1,5 +1,6 @@
 package com.example.khangnhd.hungtrung.gameView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +19,9 @@ import com.example.khangnhd.hungtrung.GameLoopThread;
 import com.example.khangnhd.hungtrung.R;
 import com.example.khangnhd.hungtrung.gameSprite.Sprite;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by khangnhd on 02/05/2018.
  */
@@ -25,26 +29,41 @@ import com.example.khangnhd.hungtrung.gameSprite.Sprite;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder sh;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Bitmap bmpEgg, bmpBasket;
+    private Bitmap bmpEgg, bmpBasket, bmpBackground;
 
     private GameLoopThread gameLoopThread;
 
     //Sprite
-    private Sprite spriteBasket, spriteEgg;
+    private Sprite spriteBasket;
+    private List<Sprite> spriteEggList;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public GameSurfaceView(Context context) {
         super(context);
+        //   this.setBackgroundResource(R.drawable.background);
         sh = getHolder();
         sh.addCallback(this);
         paint.setColor(Color.BLUE);
         paint.setStyle(Paint.Style.FILL);
         gameLoopThread = new GameLoopThread(this);
 
+        //bmp
         bmpEgg = BitmapFactory.decodeResource(getResources(), R.drawable.egg);
         bmpBasket = BitmapFactory.decodeResource(getResources(), R.drawable.basket3);
+        bmpBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+
+        //sprite
         spriteBasket = new Sprite(this, bmpBasket, 20);
-        spriteEgg = new Sprite(this, bmpEgg, 20);
+        spriteEggList = new ArrayList<>();
+
+        Sprite spriteEgg = new Sprite(this, bmpEgg, 20);
+        Sprite spriteEgg1 = new Sprite(this, bmpEgg, 20);
+        spriteEgg.setX(100);
+        spriteEgg1.setX(400);
+
+        spriteEggList.add(spriteEgg);
+        spriteEggList.add(spriteEgg1);
+
 
     }
 
@@ -78,23 +97,42 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onDraw(Canvas cv) {
         super.onDraw(cv);
 
-        cv.drawColor(Color.BLACK);
+        // cv.drawColor(Color.BLACK);
+//        Paint paint = new Paint();
+//        paint.setColor(Color.WHITE);
+//        paint.setStyle(Paint.Style.FILL);
+//        cv.drawPaint(paint);
+//
+//        paint.setColor(Color.BLACK);
+//        paint.setTextSize(20);
+//        cv.drawText("Some Text", 10, 25, paint);
+        cv.drawBitmap(bmpBackground, 0, 0, null);
+        //     Log.d("test", "" + this.getWidth());
 
         spriteBasket.onDrawBasket(cv);
-        spriteEgg.onDrawEgg(cv);
 
-        // Log.d("test", "width:" + spriteBasket.getWidth() + "height:" + spriteBasket.getHeight());
+        for (Sprite spriteEgg : spriteEggList) {
+            spriteEgg.onDrawEgg(cv);
 
-        if (spriteEgg.getY() >= spriteBasket.getY() && spriteEgg.getX() > spriteBasket.getX() && spriteEgg.getX() < spriteBasket.getX() + spriteBasket.getWidth()) {
-            Log.d("test", "Ok");
+            if (spriteEgg.isCollision(spriteBasket)) {
+                // spriteEggList.remove(spriteEgg);
+                //  Log.d("test", "Collision:" + spriteEgg.getX());
+            }
         }
 
-        // Log.d("test", "basket-X:" + spriteBasket.getX() + "basket-Y:" + spriteBasket.getY());
-        // Log.d("test", "egg-X:" + spriteEgg.getX() + "basket-X:" + spriteBasket.getX());
+
+//        if (spriteEgg.getX() == 0) {
+//            spriteEgg.setX(150);
+//            Log.d("test", "O");
+//        }
+//        if (spriteEgg.isCollision(spriteBasket)) {
+//            Log.d("test", "Collision");
+//        }
 
     }
 
@@ -102,7 +140,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public boolean onTouchEvent(MotionEvent event) {
 
         spriteBasket.setX(event.getX());
-        // Toast.makeText(getContext(), "touch:" + event.getX() + "," + event.getY(), Toast.LENGTH_LONG).show();
         return true;
     }
+
 }

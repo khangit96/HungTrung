@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.example.khangnhd.hungtrung.gameView.GameSurfaceView;
 
+import java.util.Random;
+
 public class Sprite {
 
     //Position
@@ -108,13 +110,15 @@ public class Sprite {
     }
 
     /*
-    *
-    * */
-    public boolean isCollision(float x2, float y2) {
-        if (y2 >= y) {
+     *
+     * */
+    public boolean isCollision(Sprite spriteBasket) {
 
+        if (y >= spriteBasket.getY() && x > spriteBasket.getX() && x < spriteBasket.getX() + spriteBasket.getWidth()) {
+            return true;
         }
-        return true;
+        return false;
+
     }
 
     /*
@@ -131,7 +135,11 @@ public class Sprite {
      * */
     public void onDrawEgg(Canvas canvas) {
         updateEgg();
-        setX(150);
+
+//        Random rand = new Random();
+//        int n = rand.nextInt(canvas.getWidth()) + 10;
+//
+//        setX(n);
         canvas.drawBitmap(bmp, x, y, null);
     }
 }
