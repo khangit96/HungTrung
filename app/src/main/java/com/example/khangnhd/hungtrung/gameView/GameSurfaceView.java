@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -28,7 +29,6 @@ import java.util.List;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder sh;
-    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Bitmap bmpEgg, bmpBasket, bmpBackground;
 
     private GameLoopThread gameLoopThread;
@@ -40,11 +40,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public GameSurfaceView(Context context) {
         super(context);
-        //   this.setBackgroundResource(R.drawable.background);
+
         sh = getHolder();
         sh.addCallback(this);
-        paint.setColor(Color.BLUE);
-        paint.setStyle(Paint.Style.FILL);
+
+        //thread
         gameLoopThread = new GameLoopThread(this);
 
         //bmp
@@ -102,17 +102,33 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void onDraw(Canvas cv) {
         super.onDraw(cv);
 
-        // cv.drawColor(Color.BLACK);
-//        Paint paint = new Paint();
-//        paint.setColor(Color.WHITE);
-//        paint.setStyle(Paint.Style.FILL);
-//        cv.drawPaint(paint);
-//
-//        paint.setColor(Color.BLACK);
-//        paint.setTextSize(20);
-//        cv.drawText("Some Text", 10, 25, paint);
         cv.drawBitmap(bmpBackground, 0, 0, null);
-        //     Log.d("test", "" + this.getWidth());
+
+        //Paint time
+        Paint paintTime = new Paint();
+        paintTime.setColor(Color.BLACK);
+        paintTime.setStyle(Paint.Style.STROKE);
+        paintTime.setStrokeWidth(3);
+        paintTime.setTextSize(43);
+
+        //PaintScore
+        Paint paintScore = new Paint();
+        paintScore.setColor(Color.RED);
+        paintScore.setStyle(Paint.Style.STROKE);
+        paintScore.setStrokeWidth(3);
+        paintScore.setTextSize(43);
+
+        Rect boundsTextScore = new Rect();
+        Rect boundsTextTime = new Rect();
+
+        String textTime = "Time: 30s";
+        String textScore = "Score: 50";
+
+        paintTime.getTextBounds(textTime, 0, textTime.length(), boundsTextTime);
+        paintTime.getTextBounds(textScore, 0, textScore.length(), boundsTextScore);
+
+        cv.drawText(textTime, 0 + 30, 100, paintTime);
+        cv.drawText(textScore, cv.getWidth() - boundsTextScore.width() - 30, 100, paintScore);
 
         spriteBasket.onDrawBasket(cv);
 
