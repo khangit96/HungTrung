@@ -1,8 +1,8 @@
-package com.example.khangnhd.hungtrung;
+package com.example.khangnhd.hungtrung.thread;
 
 import android.graphics.Canvas;
 
-import com.example.khangnhd.hungtrung.gameView.GameSurfaceView;
+import com.example.khangnhd.hungtrung.view.GameSurfaceView;
 
 /**
  * Created by khangnhd on 02/05/2018.

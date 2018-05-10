@@ -1,16 +1,11 @@
 package com.example.khangnhd.hungtrung.activity;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.example.khangnhd.hungtrung.gameView.GameSurfaceView;
+import com.example.khangnhd.hungtrung.view.GameSurfaceView;
 
 public class MainActivity extends AppCompatActivity {
 

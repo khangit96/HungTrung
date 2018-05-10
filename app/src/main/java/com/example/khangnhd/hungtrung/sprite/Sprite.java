@@ -1,12 +1,9 @@
-package com.example.khangnhd.hungtrung.gameSprite;
+package com.example.khangnhd.hungtrung.sprite;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.util.Log;
 
-import com.example.khangnhd.hungtrung.gameView.GameSurfaceView;
-
-import java.util.Random;
+import com.example.khangnhd.hungtrung.view.GameSurfaceView;
 
 public class Sprite {
 

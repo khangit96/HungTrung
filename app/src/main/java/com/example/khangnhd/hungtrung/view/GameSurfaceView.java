@@ -1,7 +1,8 @@
-package com.example.khangnhd.hungtrung.gameView;
+package com.example.khangnhd.hungtrung.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,12 +15,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
-import com.example.khangnhd.hungtrung.GameLoopThread;
+import com.example.khangnhd.hungtrung.thread.GameLoopThread;
 import com.example.khangnhd.hungtrung.R;
-import com.example.khangnhd.hungtrung.gameSprite.Sprite;
+import com.example.khangnhd.hungtrung.sprite.Sprite;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,7 @@ import java.util.List;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder sh;
-    private Bitmap bmpEgg, bmpBasket, bmpBackground;
+    private Bitmap bmpEgg, bmpBasket, bmpHeart, bmpBackground;
 
     private GameLoopThread gameLoopThread;
 
@@ -49,6 +51,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         //bmp
         bmpEgg = BitmapFactory.decodeResource(getResources(), R.drawable.egg);
+        bmpHeart = BitmapFactory.decodeResource(getResources(), R.drawable.heart);
         bmpBasket = BitmapFactory.decodeResource(getResources(), R.drawable.basket3);
         bmpBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
 
@@ -59,12 +62,29 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Sprite spriteEgg = new Sprite(this, bmpEgg, 20);
         Sprite spriteEgg1 = new Sprite(this, bmpEgg, 20);
         spriteEgg.setX(100);
-        spriteEgg1.setX(400);
+        spriteEgg1.setX(250);
 
         spriteEggList.add(spriteEgg);
         spriteEggList.add(spriteEgg1);
 
+    }
 
+    /*
+     *
+     * */
+    public Bitmap getBitmapFromAsset(Context context, String filePath) {
+        AssetManager assetManager = context.getAssets();
+
+        InputStream istr;
+        Bitmap bitmap = null;
+        try {
+            istr = assetManager.open(filePath);
+            bitmap = BitmapFactory.decodeStream(istr);
+        } catch (IOException e) {
+            // handle exception
+        }
+
+        return bitmap;
     }
 
     @Override
@@ -104,31 +124,24 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         cv.drawBitmap(bmpBackground, 0, 0, null);
 
-        //Paint time
-        Paint paintTime = new Paint();
-        paintTime.setColor(Color.BLACK);
-        paintTime.setStyle(Paint.Style.STROKE);
-        paintTime.setStrokeWidth(3);
-        paintTime.setTextSize(43);
-
         //PaintScore
         Paint paintScore = new Paint();
         paintScore.setColor(Color.RED);
         paintScore.setStyle(Paint.Style.STROKE);
         paintScore.setStrokeWidth(3);
-        paintScore.setTextSize(43);
+        paintScore.setTextSize(83);
 
         Rect boundsTextScore = new Rect();
-        Rect boundsTextTime = new Rect();
 
-        String textTime = "Time: 30s";
-        String textScore = "Score: 50";
+        String textScore = "10";
 
-        paintTime.getTextBounds(textTime, 0, textTime.length(), boundsTextTime);
-        paintTime.getTextBounds(textScore, 0, textScore.length(), boundsTextScore);
+        paintScore.getTextBounds(textScore, 0, textScore.length(), boundsTextScore);
 
-        cv.drawText(textTime, 0 + 30, 100, paintTime);
-        cv.drawText(textScore, cv.getWidth() - boundsTextScore.width() - 30, 100, paintScore);
+        cv.drawText(textScore, cv.getWidth() - boundsTextScore.width() - 60, 100, paintScore);
+
+        cv.drawBitmap(bmpHeart, 30, 30, null);
+        cv.drawBitmap(bmpHeart, 30 + bmpHeart.getWidth(), 30, null);
+        cv.drawBitmap(bmpHeart, 30 + bmpHeart.getWidth() + bmpHeart.getWidth(), 30, null);
 
         spriteBasket.onDrawBasket(cv);
 
@@ -136,8 +149,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             spriteEgg.onDrawEgg(cv);
 
             if (spriteEgg.isCollision(spriteBasket)) {
-                // spriteEggList.remove(spriteEgg);
-                //  Log.d("test", "Collision:" + spriteEgg.getX());
+                spriteEggList.remove(spriteEgg);
+                Log.d("test", "Collision:" + spriteEgg.getX());
+                break;
+
             }
         }
 
