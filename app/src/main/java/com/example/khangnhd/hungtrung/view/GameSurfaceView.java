@@ -16,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.example.khangnhd.hungtrung.sprite.SpriteBasket;
+import com.example.khangnhd.hungtrung.sprite.SpriteEgg;
 import com.example.khangnhd.hungtrung.thread.GameLoopThread;
 import com.example.khangnhd.hungtrung.R;
 import com.example.khangnhd.hungtrung.sprite.Sprite;
@@ -36,7 +38,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private GameLoopThread gameLoopThread;
 
     //Sprite
-    private Sprite spriteBasket;
+    private SpriteEgg spriteEgg;
+    private SpriteBasket spriteBasket;
     private List<Sprite> spriteEggList;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -55,37 +58,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         bmpBasket = BitmapFactory.decodeResource(getResources(), R.drawable.basket3);
         bmpBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
 
-        //sprite
-        spriteBasket = new Sprite(this, bmpBasket, 20);
-        spriteEggList = new ArrayList<>();
-
-        Sprite spriteEgg = new Sprite(this, bmpEgg, 20);
-        Sprite spriteEgg1 = new Sprite(this, bmpEgg, 20);
-        spriteEgg.setX(100);
-        spriteEgg1.setX(250);
-
-        spriteEggList.add(spriteEgg);
-        spriteEggList.add(spriteEgg1);
-
+        spriteEgg = new SpriteEgg(this, bmpEgg, 10);
+        spriteBasket = new SpriteBasket(this, bmpBasket);
     }
 
-    /*
-     *
-     * */
-    public Bitmap getBitmapFromAsset(Context context, String filePath) {
-        AssetManager assetManager = context.getAssets();
-
-        InputStream istr;
-        Bitmap bitmap = null;
-        try {
-            istr = assetManager.open(filePath);
-            bitmap = BitmapFactory.decodeStream(istr);
-        } catch (IOException e) {
-            // handle exception
-        }
-
-        return bitmap;
-    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -143,27 +119,28 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         cv.drawBitmap(bmpHeart, 30 + bmpHeart.getWidth(), 30, null);
         cv.drawBitmap(bmpHeart, 30 + bmpHeart.getWidth() + bmpHeart.getWidth(), 30, null);
 
-        spriteBasket.onDrawBasket(cv);
+        spriteBasket.onDraw(cv);
+        spriteEgg.onDraw(cv);
+        // Log.d("test", String.valueOf(this.spriteEgg.getGameViewHeigh()));
 
-        for (Sprite spriteEgg : spriteEggList) {
-            spriteEgg.onDrawEgg(cv);
+        //        spriteBasket.onDrawBasket(cv);
+//
+//        for (Sprite spriteEgg : spriteEggList) {
+//            spriteEgg.onDrawEgg(cv);
+//
+//            if (spriteEgg.isCollision(spriteBasket)) {
+//                spriteEggList.remove(spriteEgg);
+//                Log.d("test", "Collision:" + spriteEgg.getX());
+//                break;
+//
+//            }
+//        }
 
-            if (spriteEgg.isCollision(spriteBasket)) {
-                spriteEggList.remove(spriteEgg);
-                Log.d("test", "Collision:" + spriteEgg.getX());
-                break;
 
-            }
+        if (spriteEgg.isCollision(spriteBasket)) {
+            Log.d("test", "Collision");
         }
 
-
-//        if (spriteEgg.getX() == 0) {
-//            spriteEgg.setX(150);
-//            Log.d("test", "O");
-//        }
-//        if (spriteEgg.isCollision(spriteBasket)) {
-//            Log.d("test", "Collision");
-//        }
 
     }
 
