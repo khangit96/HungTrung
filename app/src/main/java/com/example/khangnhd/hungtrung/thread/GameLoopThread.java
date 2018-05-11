@@ -2,7 +2,10 @@ package com.example.khangnhd.hungtrung.thread;
 
 import android.graphics.Canvas;
 
+import com.example.khangnhd.hungtrung.sprite.SpriteEgg;
 import com.example.khangnhd.hungtrung.view.GameSurfaceView;
+
+import java.util.Random;
 
 /**
  * Created by khangnhd on 02/05/2018.
@@ -49,6 +52,11 @@ public class GameLoopThread extends Thread {
                 synchronized (view.getHolder()) {
 
                     view.onDraw(c);
+//                    Random rand = new Random();
+//
+//                    int n = rand.nextInt((int) 300 - 50) + 10;
+//                    GameSurfaceView.spriteEggList.add(new SpriteEgg(view, GameSurfaceView.bmpEgg, 10, n));
+
 
                 }
 
