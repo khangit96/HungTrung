@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
@@ -34,21 +36,22 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.content.Context.AUDIO_SERVICE;
+
 /**
  * Created by khangnhd on 02/05/2018.
  */
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder sh;
-    private Bitmap bmpBasket, bmpHeart, bmpBackground, bmpBrokenEgg;
-    private Bitmap bmpEgg;
+    private Bitmap bmpBasket, bmpHeart, bmpBackground, bmpBrokenEgg, bmpEgg, bmpBoom;
 
     private GameLoopThread gameLoopThread;
 
     //Sprite
     private SpriteBasket spriteBasket;
     private List<SpriteEgg> spriteEggList;
-    private List<SpriteEgg> spriteEggBroken;
+    private List<SpriteEgg> spriteBoomList;
 
     //Time
     private Timer timerPlaygame;
@@ -66,6 +69,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     boolean checkBrokenEggTwo = false;
     boolean checkBrokenEggThree = false;
 
+    //Sound
+    public AudioManager audioManager;
+    private int soundIDGameOver;
+    private int soundIDExplosion;
+    private SoundPool soundPool;
+    private float maxVolume;
+    private float actVolume;
+    private float volume;
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public GameSurfaceView(Context context) {
         super(context);
@@ -78,22 +90,45 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         //bmp
         bmpEgg = BitmapFactory.decodeResource(getResources(), R.drawable.egg);
+        bmpBoom = BitmapFactory.decodeResource(getResources(), R.drawable.boom);
         bmpBrokenEgg = BitmapFactory.decodeResource(getResources(), R.drawable.broken_egg);
         bmpHeart = BitmapFactory.decodeResource(getResources(), R.drawable.heart);
         bmpBasket = BitmapFactory.decodeResource(getResources(), R.drawable.basket3);
         bmpBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
 
         spriteBasket = new SpriteBasket(this, bmpBasket);
+        spriteBoomList = new ArrayList<>();
         spriteEggList = new ArrayList<>();
         spriteEggList.add(new SpriteEgg(this, bmpEgg, 10, 10));
 
-        if (countCheckBrokenEgg == 1) {
+        //Init sound
+        initSound(context);
 
-        }
         //start timer
         startTimer();
     }
 
+    /*
+     * Init sound
+     * */
+    public void initSound(Context context) {
+        // AudioManager audio settings for adjusting the volume
+        audioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+        actVolume = (float) audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        maxVolume = (float) audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        volume = actVolume / maxVolume;
+
+        soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        soundIDExplosion = soundPool.load(context, R.raw.explosion, 1);
+        soundIDGameOver = soundPool.load(context, R.raw.game_over, 1);
+    }
+
+    /*
+     * Play sound
+     * */
+    public void playSound(int soundID) {
+        soundPool.play(soundID, volume, volume, 1, 0, 1.0f);
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -179,8 +214,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             cv.drawBitmap(bmpBrokenEgg, 500, this.spriteBasket.getGameViewHeigh() - this.bmpBrokenEgg.getHeight(), null);
         }
 
+        //Draw basket
         spriteBasket.onDraw(cv);
 
+        //Draw list egg
         synchronized (getHolder()) {
             for (SpriteEgg spriteEgg : spriteEggList) {
                 if (spriteEgg != null) {
@@ -189,6 +226,16 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
+        //Draw list egg
+        synchronized (getHolder()) {
+            for (SpriteEgg spriteBoom : spriteBoomList) {
+                if (spriteBoom != null) {
+                    spriteBoom.onDraw(cv);
+                }
+            }
+        }
+
+        // Check collision egg with basket and remove egg
         for (SpriteEgg spriteEgg : spriteEggList) {
             if (spriteEgg.isCollision(spriteBasket)) {
                 score += 5;
@@ -199,6 +246,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             } else {
                 if (spriteEgg.isEggEnd()) {
                     countCheckBrokenEgg++;
+                    playSound(soundIDExplosion);
                     if (countCheckBrokenEgg == 1) {
                         checkBrokenEggOne = true;
                     } else if (countCheckBrokenEgg == 2) {
@@ -207,13 +255,29 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         checkBrokenEggThree = true;
                         Log.d("test", "End");
                         spriteEggList.clear();
+                        spriteBoomList.clear();
                         stopTimer(timerPlaygame);
                         checkGameOver = true;
-
+                        playSound(soundIDGameOver);
                         break;
                     }
                     break;
                 }
+            }
+        }
+
+        // Check collision boom with basket and game over
+        for (SpriteEgg spriteBoom : spriteBoomList) {
+            if (spriteBoom.isCollision(spriteBasket)) {
+                checkGameOver = true;
+                playSound(soundIDExplosion);
+                playSound(soundIDGameOver);
+                spriteEggList.clear();
+                stopTimer(timerPlaygame);
+                cv.drawBitmap(bmpBoom, spriteBoom.getX(), spriteBoom.getY(), null);
+                spriteBoomList.clear();
+                break;
+
             }
         }
 
@@ -237,12 +301,24 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 mTimerHandler.post(new Runnable() {
                     public void run() {
                         countTime++;
+
                         Random rand = new Random();
+
+                        //Random egg
                         if (spriteBasket.getGameViewWidth() > 0) {
-                            int n = rand.nextInt((int) spriteBasket.getGameViewWidth() - 100) + 30;
-                            spriteEggList.add(new SpriteEgg(spriteBasket.getGameView(), bmpEgg, 10, n));
+                            int XPos = rand.nextInt((int) spriteBasket.getGameViewWidth() - 100) + 30;
+                            int ranSpeed = rand.nextInt(50) + 5;
+
+                            spriteEggList.add(new SpriteEgg(spriteBasket.getGameView(), bmpEgg, ranSpeed, XPos));
                         }
 
+                        //Random boom after 5s
+                        if (countTime == 3) {
+                            countTime = 0;
+                            int XPos = rand.nextInt((int) spriteBasket.getGameViewWidth() - 100) + 30;
+                            int ranSpeed = rand.nextInt(50) + 5;
+                            spriteBoomList.add(new SpriteEgg(spriteBasket.getGameView(), bmpBoom, ranSpeed, XPos));
+                        }
 
 //                        if (countTime == 6) {
 //                            long estimatedTime = System.currentTimeMillis() - startTime;

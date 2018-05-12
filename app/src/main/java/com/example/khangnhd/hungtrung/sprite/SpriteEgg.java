@@ -23,7 +23,7 @@ public class SpriteEgg extends Sprite {
      * */
     public boolean isCollision(Sprite spriteBasket) {
 
-        if (getY() >= spriteBasket.getY() && getX() >= spriteBasket.getX() && getX() < spriteBasket.getX() + spriteBasket.getBmp().getWidth()) {
+        if (getY() >= spriteBasket.getY() && getX() >= spriteBasket.getX() && getX() <= spriteBasket.getX() + spriteBasket.getBmp().getWidth()) {
             return true;
         }
         return false;
